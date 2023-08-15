@@ -27,11 +27,18 @@ trait ConsumesExternalService{
 
         }catch (RequestException $e) {
 
-            echo $e->getMessage();
-            
-        }
+            if ($e->hasResponse()) {
+                $response = $e->getResponse(); // Get the response object
 
-        return $response->getBody()->getContents();
+                // Check if the response code > 400
+                if ($response->getStatusCode() >= 400 ) {
+
+                    $responseBody = json_decode($response->getBody()->getContents(), true);
+                    return json_encode( $responseBody );
+                }
+            }
+        }        
+
 
     }
 

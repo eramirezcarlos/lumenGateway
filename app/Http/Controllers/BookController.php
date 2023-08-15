@@ -43,7 +43,7 @@ class BookController extends Controller
      * Return the list of Books
      * @return Illuminate\Http\JsonResponse
      */
-    public function index(): JsonResponse
+    public function index()
     {
         return $this->successResponse($this->bookService->obtainBooks());
     }
@@ -52,7 +52,7 @@ class BookController extends Controller
      * Create one new Book
      * @return Illuminate\Http\JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $this->authorService->obtainAuthor($request->author_id);
         return $this->successResponse($this->bookService->createBook($request->all(), Response::HTTP_CREATED));
@@ -63,7 +63,7 @@ class BookController extends Controller
      * Obtains and show one Book
      * @return Illuminate\Http\JsonResponse
      */
-    public function show($book): JsonResponse
+    public function show($book)
     {
         return $this->successResponse($this->bookService->obtainBook($book));
     }
@@ -72,7 +72,7 @@ class BookController extends Controller
      * Update an existing Book
      * @return Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $book): JsonResponse
+    public function update(Request $request, $book)
     {
         return $this->successResponse($this->bookService->editBook($request->all(), $book));        
     }
@@ -81,7 +81,7 @@ class BookController extends Controller
      * Remove an existing Book
      * @return Illuminate\Http\JsonResponse
      */
-    public function destroy($book): JsonResponse
+    public function destroy($book)
     {
         return $this->successResponse($this->bookService->deleteBook($book));         
     }
