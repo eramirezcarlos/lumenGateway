@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Traits\ConsumesExternalService;
 use App\Services\BookService;
 use App\Services\AuthorService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookController extends Controller
 {
@@ -54,9 +56,24 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorService->obtainAuthor($request->author_id);
-        return $this->successResponse($this->bookService->createBook($request->all(), Response::HTTP_CREATED));
+        
+        try {
+            $authorResponse = $this->authorService->obtainAuthor($request->author_id);
 
+            // Check if the response contains a 404 status code
+            if ( isset(json_decode($authorResponse, true)['code'] )  && json_decode($authorResponse, true)['code'] >= 400) {
+                // The author was not found, return a 404 response
+                return $this->errorResponse(json_decode($authorResponse, true)['error'], json_decode($authorResponse, true)['code'] );                
+            }else{
+                return $this->successResponse($this->bookService->createBook($request->all(), Response::HTTP_CREATED));
+            }
+
+        } catch (HttpClientException $e) {
+            
+            return $this->errorResponse('An error occurred ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        
     }
 
     /**
